@@ -132,6 +132,7 @@ abstract public class AbstractInfoFragment extends AbstractFragment
         hostInfo = hostManager.getHostInfo();
     }
 
+    @TargetApi(21)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -463,7 +464,7 @@ abstract public class AbstractInfoFragment extends AbstractFragment
                 if (checkStoragePermission()) {
                     if (Settings.allowedDownloadNetworkTypes(getActivity()) != 0) {
                         listener.onClick(view);
-                        setButtonState(downloadButton, true);
+                        UIUtils.highlightImageView(getActivity(), downloadButton, true);
                     } else {
                         Toast.makeText(getActivity(), R.string.no_connection_type_selected, Toast.LENGTH_SHORT).show();
                     }
@@ -499,7 +500,7 @@ abstract public class AbstractInfoFragment extends AbstractFragment
      * @param state true if item has been watched/listened too, false otherwise
      */
     protected void setDownloadButtonState(boolean state) {
-        setButtonState(downloadButton, state);
+        UIUtils.highlightImageView(getActivity(), downloadButton, state);
     }
 
     /**
@@ -514,16 +515,8 @@ abstract public class AbstractInfoFragment extends AbstractFragment
         setToggleButtonState(pinUnpinButton, state);
     }
 
-    private void setButtonState(ImageButton button, boolean state) {
-        if (state) {
-            UIUtils.highlightImageView(getActivity(), button);
-        } else {
-            button.clearColorFilter();
-        }
-    }
-
     private void setToggleButtonState(ImageButton button, boolean state) {
-        setButtonState(button, state);
+        UIUtils.highlightImageView(getActivity(), button, state);
         button.setTag(state);
     }
 

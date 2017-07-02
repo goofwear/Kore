@@ -81,7 +81,7 @@
                 android:scaleType="centerCrop"/>
 
             <!-- Progress bar -->
-            <LinearLayout
+            <org.xbmc.kore.ui.widgets.MediaProgressIndicator
                 android:id="@+id/progress_info"
                 android:layout_below="@id/media_undertitle"
                 android:layout_width="match_parent"
@@ -90,26 +90,7 @@
                 android:paddingRight="@dimen/small_padding"
                 android:paddingLeft="@dimen/small_padding"
                 android:orientation="horizontal"
-                android:background="?attr/contentBackgroundColor">
-                <TextView
-                    android:id="@+id/media_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    style="@style/TextAppearance.Media.Progress"/>
-                <SeekBar
-                    android:id="@+id/seek_bar"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"/>
-                <TextView
-                    android:id="@+id/media_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    style="@style/TextAppearance.Media.Progress"/>
-            </LinearLayout>
+                android:background="?attr/contentBackgroundColor"/>
 
             <!-- Media control buttons -->
             <LinearLayout
@@ -137,14 +118,6 @@
                     android:src="?attr/iconRewind"
                     android:contentDescription="@string/rewind"/>
                 <ImageButton
-                    android:id="@+id/stop"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    style="@style/Widget.Button.Borderless"
-                    android:src="?attr/iconStop"
-                    android:contentDescription="@string/stop"/>
-                <ImageButton
                     android:id="@+id/play"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -152,6 +125,14 @@
                     style="@style/Widget.Button.Borderless"
                     android:src="?attr/iconPlay"
                     android:contentDescription="@string/play"/>
+                <ImageButton
+                    android:id="@+id/stop"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    style="@style/Widget.Button.Borderless"
+                    android:src="?attr/iconStop"
+                    android:contentDescription="@string/stop"/>
                 <ImageButton
                     android:id="@+id/fast_forward"
                     android:layout_width="0dp"
@@ -180,7 +161,7 @@
                 style="@style/ButtonBar"
                 android:background="?attr/contentBackgroundColor">
 
-                <ImageButton
+                <org.xbmc.kore.ui.widgets.HighlightButton
                     android:id="@+id/volume_mute"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -188,27 +169,13 @@
                     style="@style/Widget.Button.Borderless"
                     android:src="?attr/iconVolumeMute"
                     android:contentDescription="@string/volume_mute"/>
-                <LinearLayout
+                <org.xbmc.kore.ui.widgets.VolumeLevelIndicator
+                    android:id="@+id/volume_level_indicator"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/volume_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|top"
-                        style="@style/TextAppearance.Media.SmallDetails"
-                        android:textSize="10sp"/>
-                    <SeekBar
-                        android:id="@+id/volume_bar"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/Widget.Button.Borderless"
-                        android:layout_gravity="bottom"/>
-                </LinearLayout>
-
-                <ImageButton
+                    android:orientation="vertical"/>
+                <org.xbmc.kore.ui.widgets.RepeatModeButton
                     android:id="@+id/repeat"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -216,7 +183,7 @@
                     style="@style/Widget.Button.Borderless"
                     android:src="?attr/iconRepeat"
                     android:contentDescription="@string/repeat"/>
-                <ImageButton
+                <org.xbmc.kore.ui.widgets.HighlightButton
                     android:id="@+id/shuffle"
                     android:layout_width="0dp"
                     android:layout_weight="1"

@@ -17,7 +17,6 @@ package org.xbmc.kore.ui.sections.remote;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -34,7 +33,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +54,10 @@ import org.xbmc.kore.jsonrpc.type.PlayerType;
 import org.xbmc.kore.jsonrpc.type.VideoType;
 import org.xbmc.kore.ui.generic.GenericSelectDialog;
 import org.xbmc.kore.ui.sections.video.AllCastActivity;
+import org.xbmc.kore.ui.widgets.HighlightButton;
+import org.xbmc.kore.ui.widgets.MediaProgressIndicator;
+import org.xbmc.kore.ui.widgets.RepeatModeButton;
+import org.xbmc.kore.ui.widgets.VolumeLevelIndicator;
 import org.xbmc.kore.utils.LogUtils;
 import org.xbmc.kore.utils.UIUtils;
 import org.xbmc.kore.utils.Utils;
@@ -73,7 +75,8 @@ import butterknife.OnClick;
 public class NowPlayingFragment extends Fragment
         implements HostConnectionObserver.PlayerEventsObserver,
                    HostConnectionObserver.ApplicationEventsObserver,
-        GenericSelectDialog.GenericSelectDialogListener {
+                   GenericSelectDialog.GenericSelectDialogListener,
+                   MediaProgressIndicator.OnProgressChangeListener {
     private static final String TAG = LogUtils.makeLogTag(NowPlayingFragment.class);
 
     /**
@@ -133,9 +136,9 @@ public class NowPlayingFragment extends Fragment
     @InjectView(R.id.rewind) ImageButton rewindButton;
     @InjectView(R.id.fast_forward) ImageButton fastForwardButton;
 
-    @InjectView(R.id.volume_mute) ImageButton volumeMuteButton;
-    @InjectView(R.id.shuffle) ImageButton shuffleButton;
-    @InjectView(R.id.repeat) ImageButton repeatButton;
+    @InjectView(R.id.repeat) RepeatModeButton repeatButton;
+    @InjectView(R.id.volume_mute) HighlightButton volumeMuteButton;
+    @InjectView(R.id.shuffle) HighlightButton shuffleButton;
     @InjectView(R.id.overflow) ImageButton overflowButton;
 
     @InjectView(R.id.info_panel) RelativeLayout infoPanel;
@@ -149,12 +152,9 @@ public class NowPlayingFragment extends Fragment
 
     @InjectView(R.id.media_title) TextView mediaTitle;
     @InjectView(R.id.media_undertitle) TextView mediaUndertitle;
-    @InjectView(R.id.media_duration) TextView mediaDuration;
-    @InjectView(R.id.media_progress) TextView mediaProgress;
-    @InjectView(R.id.seek_bar) SeekBar mediaSeekbar;
+    @InjectView(R.id.progress_info) MediaProgressIndicator mediaProgressIndicator;
 
-    @InjectView(R.id.volume_bar) SeekBar volumeSeekBar;
-    @InjectView(R.id.volume_text) TextView volumeTextView;
+    @InjectView(R.id.volume_level_indicator) VolumeLevelIndicator volumeLevelIndicator;
 
     @InjectView(R.id.media_details) RelativeLayout mediaDetailsPanel;
     @InjectView(R.id.rating) TextView mediaRating;
@@ -199,6 +199,14 @@ public class NowPlayingFragment extends Fragment
                 float y = mediaPanel.getScrollY();
                 float newAlpha = Math.min(1, Math.max(0, 1 - (y / pixelsToTransparent)));
                 mediaArt.setAlpha(newAlpha);
+            }
+        });
+
+        volumeLevelIndicator.setOnVolumeChangeListener(new VolumeLevelIndicator.OnVolumeChangeListener() {
+            @Override
+            public void onVolumeChanged(int volume) {
+                new Application.SetVolume(volume).execute(hostManager.getConnection(),
+                                                          defaultIntActionCallback, new Handler());
             }
         });
 
@@ -300,18 +308,10 @@ public class NowPlayingFragment extends Fragment
         // the mute state on the host. We do this to make it clear to the user that the button
         // was pressed.
         HostConnectionObserver.HostState hostState = hostConnectionObserver.getHostState();
-        setVolumeState(!hostState.isVolumeMuted(), hostState.getVolumeLevel());
+        UIUtils.highlightImageView(getActivity(), volumeMuteButton, !hostState.isVolumeMuted());
 
         Application.SetMute action = new Application.SetMute();
-        action.execute(hostManager.getConnection(), new ApiCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                //We depend on the listener to correct the mute button state
-            }
-
-            @Override
-            public void onError(int errorCode, String description) { }
-        }, callbackHandler);
+        action.execute(hostManager.getConnection(), defaultBooleanActionCallback, new Handler());
     }
 
     @OnClick(R.id.shuffle)
@@ -538,6 +538,23 @@ public class NowPlayingFragment extends Fragment
         nowPlayingListener.SwitchToRemotePanel();
     }
 
+    @Override
+    public void onProgressChanged(int progress) {
+        PlayerType.PositionTime positionTime = new PlayerType.PositionTime(progress);
+        Player.Seek seekAction = new Player.Seek(currentActivePlayerId, positionTime);
+        seekAction.execute(hostManager.getConnection(), new ApiCallback<PlayerType.SeekReturnType>() {
+            @Override
+            public void onSuccess(PlayerType.SeekReturnType result) {
+                // Ignore
+            }
+
+            @Override
+            public void onError(int errorCode, String description) {
+                LogUtils.LOGD(TAG, "Got an error calling Player.Seek. Error code: " + errorCode + ", description: " + description);
+            }
+        }, callbackHandler);
+    }
+
     /**
      * HostConnectionObserver.PlayerEventsObserver interface callbacks
      */
@@ -601,7 +618,8 @@ public class NowPlayingFragment extends Fragment
 
     @Override
     public void applicationOnVolumeChanged(int volume, boolean muted) {
-        setVolumeState(muted, volume);
+        volumeLevelIndicator.setVolume(muted, volume);
+        UIUtils.highlightImageView(getActivity(), volumeMuteButton, muted);
     }
 
     // Ignore this
@@ -716,8 +734,15 @@ public class NowPlayingFragment extends Fragment
         mediaTitle.setText(title);
         mediaUndertitle.setText(underTitle);
 
-        setDurationInfo(getItemResult.type, getPropertiesResult.time, getPropertiesResult.totaltime, getPropertiesResult.speed);
-        mediaSeekbar.setOnSeekBarChangeListener(seekbarChangeListener);
+        mediaProgressIndicator.setOnProgressChangeListener(this);
+        mediaProgressIndicator.setMaxProgress(getPropertiesResult.totaltime.ToSeconds());
+        mediaProgressIndicator.setProgress(getPropertiesResult.time.ToSeconds());
+
+        int speed = getPropertiesResult.speed;
+        //TODO: check if following is still necessary for PVR playback
+        if (getItemResult.type.equals(ListType.ItemsAll.TYPE_CHANNEL))
+            speed = 1;
+        mediaProgressIndicator.setSpeed(speed);
 
         if (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(genreSeason)) {
             mediaYear.setVisibility(View.VISIBLE);
@@ -750,30 +775,9 @@ public class NowPlayingFragment extends Fragment
             mediaDescription.setVisibility(View.GONE);
         }
 
-        Resources.Theme theme = getActivity().getTheme();
-        TypedArray styledAttributes = theme.obtainStyledAttributes(new int[]{
-                R.attr.colorAccent,
-                R.attr.iconRepeat,
-                R.attr.iconRepeatOne});
-        int accentDefaultColor = getResources().getColor(R.color.accent_default);
-        if (getPropertiesResult.repeat.equals(PlayerType.Repeat.OFF)) {
-            repeatButton.setImageResource(styledAttributes.getResourceId(styledAttributes.getIndex(1), R.drawable.ic_repeat_white_24dp));
-            repeatButton.clearColorFilter();
-        } else if (getPropertiesResult.repeat.equals(PlayerType.Repeat.ONE)) {
-            repeatButton.setImageResource(styledAttributes.getResourceId(styledAttributes.getIndex(2), R.drawable.ic_repeat_one_white_24dp));
-            repeatButton.setColorFilter(styledAttributes.getColor(styledAttributes.getIndex(0), accentDefaultColor));
-        } else {
-            repeatButton.setImageResource(styledAttributes.getResourceId(styledAttributes.getIndex(1), R.drawable.ic_repeat_white_24dp));
-            repeatButton.setColorFilter(styledAttributes.getColor(styledAttributes.getIndex(0), accentDefaultColor));
-        }
-        if (!getPropertiesResult.shuffled) {
-            shuffleButton.clearColorFilter();
-        } else {
-            shuffleButton.setColorFilter(styledAttributes.getColor(styledAttributes.getIndex(0), accentDefaultColor));
-        }
-        styledAttributes.recycle();
+        UIUtils.setRepeatButton(repeatButton, getPropertiesResult.repeat);
 
-        volumeSeekBar.setOnSeekBarChangeListener(volumeSeekbarChangeListener);
+        shuffleButton.setHighlight(getPropertiesResult.shuffled);
 
         Resources resources = getActivity().getResources();
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -855,7 +859,8 @@ public class NowPlayingFragment extends Fragment
      */
     private void stopNowPlayingInfo() {
         // Just stop the seek bar handler callbacks
-        mediaSeekbar.removeCallbacks(seekBarUpdater);
+        mediaProgressIndicator.setSpeed(0);
+
         availableSubtitles = null;
         availableAudioStreams = null;
         currentSubtitleIndex = -1;
@@ -891,153 +896,4 @@ public class NowPlayingFragment extends Fragment
         if (plot == null) return null;
         return plot.replaceAll("\\[.*\\]", "");
     }
-
-    private int mediaTotalTime = 0,
-            mediaCurrentTime = 0; // s
-    private static final int SEEK_BAR_UPDATE_INTERVAL = 1000; // ms
-
-    /**
-     * Seek bar runnable updater. Runs once a second
-     */
-    private Runnable seekBarUpdater = new Runnable() {
-        @Override
-        public void run() {
-            if ((mediaTotalTime == 0) || (mediaCurrentTime >= mediaTotalTime)) {
-                mediaSeekbar.removeCallbacks(this);
-                return;
-            }
-
-            mediaCurrentTime += 1;
-            mediaSeekbar.setProgress(mediaCurrentTime);
-
-            int hours = mediaCurrentTime / 3600;
-            int minutes = (mediaCurrentTime % 3600) / 60;
-            int seconds = (mediaCurrentTime % 3600) % 60;
-
-            mediaProgress.setText(UIUtils.formatTime(hours, minutes, seconds));
-            mediaSeekbar.postDelayed(this, SEEK_BAR_UPDATE_INTERVAL);
-        }
-    };
-
-    /**
-     * Sets the information about current media duration and sets seekbar
-     * @param type What is playing
-     * @param time Current time
-     * @param totalTime Total time
-     * @param speed Media speed
-     */
-    private void setDurationInfo(String type, GlobalType.Time time, GlobalType.Time totalTime, int speed) {
-        mediaTotalTime = totalTime.hours * 3600 +
-                         totalTime.minutes * 60 +
-                         totalTime.seconds;
-        mediaSeekbar.setMax(mediaTotalTime);
-        mediaDuration.setText(UIUtils.formatTime(totalTime));
-
-        mediaCurrentTime = time.hours * 3600 +
-                           time.minutes * 60 +
-                           time.seconds;
-        mediaSeekbar.setProgress(mediaCurrentTime);
-        mediaProgress.setText(UIUtils.formatTime(time));
-
-        // Only update when its playing
-        mediaSeekbar.removeCallbacks(seekBarUpdater);
-        if ((speed == 1) || (type.equals(ListType.ItemsAll.TYPE_CHANNEL))) {
-            mediaSeekbar.postDelayed(seekBarUpdater, SEEK_BAR_UPDATE_INTERVAL);
-        }
-    }
-
-    /**
-     * Sets UI volume state
-     * @param muted whether volume is muted
-     * @param volume
-     */
-    private void setVolumeState(Boolean muted, int volume) {
-        if (!isAdded()) return;
-
-        if (muted) {
-            volumeSeekBar.setProgress(0);
-            volumeTextView.setText(R.string.muted);
-
-            Resources.Theme theme = getActivity().getTheme();
-            TypedArray styledAttributes = theme.obtainStyledAttributes(new int[] {
-                    R.attr.colorAccent});
-            volumeMuteButton.setColorFilter(
-                    styledAttributes.getColor(0,
-                                              getActivity().getResources().getColor(R.color.accent_default)));
-            styledAttributes.recycle();
-
-        } else {
-            volumeSeekBar.setProgress(volume);
-            volumeTextView.setText(String.valueOf(volume));
-            volumeMuteButton.clearColorFilter();
-        }
-    }
-
-    private SeekBar.OnSeekBarChangeListener volumeSeekbarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                volumeTextView.setText(String.valueOf(progress));
-            }
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            new Application.SetVolume(seekBar.getProgress())
-                    .execute(hostManager.getConnection(), defaultIntActionCallback, callbackHandler);
-
-        }
-    };
-
-    /**
-     * Seekbar change listener. Sends seek commands to XBMC based on the seekbar position
-     */
-    private SeekBar.OnSeekBarChangeListener seekbarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                mediaCurrentTime = progress;
-                int hours = mediaCurrentTime / 3600;
-                int minutes = (mediaCurrentTime % 3600) / 60;
-                int seconds = (mediaCurrentTime % 3600) % 60;
-
-                mediaProgress.setText(UIUtils.formatTime(hours, minutes, seconds));
-            }
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // Stop the seekbar updating
-            seekBar.removeCallbacks(seekBarUpdater);
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            int hours = mediaCurrentTime / 3600;
-            int minutes = (mediaCurrentTime % 3600) / 60;
-            int seconds = (mediaCurrentTime % 3600) % 60;
-
-            PlayerType.PositionTime positionTime = new PlayerType.PositionTime(hours, minutes, seconds, 0);
-            Player.Seek seekAction = new Player.Seek(currentActivePlayerId, positionTime);
-            seekAction.execute(hostManager.getConnection(), new ApiCallback<PlayerType.SeekReturnType>() {
-                @Override
-                public void onSuccess(PlayerType.SeekReturnType result) {
-                    // Ignore
-                }
-
-                @Override
-                public void onError(int errorCode, String description) {
-                    LogUtils.LOGD(TAG, "Got an error calling Player.Seek. Error code: " + errorCode + ", description: " + description);
-                }
-            }, callbackHandler);
-
-            // Reset the updating
-            seekBar.postDelayed(seekBarUpdater, 1000);
-        }
-    };
 }

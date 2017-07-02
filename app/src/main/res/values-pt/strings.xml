@@ -200,7 +200,9 @@ Pressione <b><i>Concluir</i></b> para usar o controlo remoto.]]></string>
   <string name="enable_disable">Ativar/desativar Extensão</string>
   <string name="addon_enabled">Extensão activada</string>
   <string name="addon_disabled">Extensão desactivada</string>
-  <string name="hide_watched">Ocultar vistos</string>
+  <string name="hide_watched">Ocultar visualizados</string>
+  <string name="show_watched_status">Assinalar visualizados</string>
+
   <string name="theme">Tema</string>
   <string name="theme_night">Noite</string>
   <string name="theme_day">Dia</string>
@@ -210,7 +212,7 @@ Pressione <b><i>Concluir</i></b> para usar o controlo remoto.]]></string>
   <string name="switch_to_remote">Mostrar ao iniciar reprodução</string>
   <string name="about">Sobre</string>
   <string name="about_desc"><![CDATA[
-        \u00A9 2015 XBMC Foundation.<br><br>
+        \u00A9 2017 XBMC Foundation<br><br>
 Por favor classifique-nos na <b><a href="market://details?id=org.xbmc.kore">Google Play</a></b><br><br>
 
 Se necessitar de ajuda, visite o nosso <b><a href="http://forum.kodi.tv/forumdisplay.php?fid=129">forum</a></b>
@@ -307,6 +309,23 @@ Se necessitar de ajuda, visite o nosso <b><a href="http://forum.kodi.tv/forumdis
   <string name="sort_by_last_played">Por data de reprodução</string>
   <string name="tvshow_next_episode">Próximos episódios</string>
   <string name="tvshow_seasons">Épocas</string>
+  <string name="Refreshing_not_implemented_for_this_item">Refrescamento não implementado para este item</string>
+  <string name="window">Janela</string>
+  <string name="application">Aplicação</string>
+  <string name="error_favourites">Ocorreram erros ao obter os favoritos: %1$s</string>
+  <string name="favourites">Favoritos</string>
+  <string name="max_rating"></string>
+  <string name="no_favourites_found_refresh">Nenhum favorito encontrado. Puxe para actualizar</string>
+  <string name="no_item_available_to_play">Nenhum item disponível para reprodução.</string>
+  <string name="no_songs_found_refresh">Nenhuma música encontrada. Puxe para actualizar</string>
+  <string name="not_implemented">Não implementado</string>
+  <string name="weather">Meteorologia</string>
+  <string name="unknown">Desconhecido</string>
+  <string name="videos">Vídeos</string>
+  <string name="unable_to_play_favourite_item">Não foi possível reproduzir o favorito. Tipo não suportado.</string>
+  <string name="system">Sistema</string>
+  <string name="remote_bar_items">Atalhos da barra inferior</string>
+  <string name="script"></string>
 
   <!--<string name="buy_me_coffee">Oferecer um café</string>-->
   <!--<string name="expresso_please">Expresso, por favor. Obrigado!</string>-->

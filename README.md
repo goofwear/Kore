@@ -4,6 +4,13 @@ Codacy analysis [![Codacy Badge](https://api.codacy.com/project/badge/grade/d7a0
 
 Doxygen documentation [![Documentation](https://codedocs.xyz/xbmc/Kore.svg)](https://codedocs.xyz/xbmc/Kore/)
 
+<a href="https://play.google.com/store/apps/details?id=org.xbmc.kore" target="_blank">
+  <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/>
+</a>
+<a href="https://f-droid.org/repository/browse/?fdfilter=kore&fdid=org.xbmc.kore" target="_blank">
+  <img src="https://f-droid.org/badge/get-it-on.png" height="80"/>
+</a>
+
 Kore - Kodi/XBMC remote for Android
 -----------------------------------
 
@@ -62,5 +69,6 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
+Google Play and the Google Play logo are trademarks of Google Inc.
 
 [1]: https://play.google.com/store/apps/details?id=org.xbmc.kore
