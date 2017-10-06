@@ -14,7 +14,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:tools="http://schemas.android.com/tools">
 
 	<!-- Base Dark theme. -->
 	<style name="NightTheme" parent="Theme.AppCompat.NoActionBar">
@@ -47,15 +48,24 @@
         <!--<item name="colorControlHighlight">@color/color_accent</item>-->
         <!--<item name="colorControlActivated">@color/color_accent</item>-->
 
+        <item name="colorToolbar">?attr/colorPrimary</item>
+        <item name="android:statusBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+
         <item name="colorButtonNormal">?attr/colorPrimary</item>
 
         <item name="appTextColorPrimary">@color/white</item>
         <item name="appTextColorSecondary">@color/white_dim_50pct</item>
 
         <item name="textColorOverPrimary">@color/white</item>
+        <item name="buttonColorOverPrimary">@color/white</item>
 
         <item name="fabColorNormal">?attr/colorPrimary</item>
         <item name="fabColorPressed">?attr/colorPrimaryDark</item>
+        <!--<item name="fabColorNormal">@color/accent_default</item>-->
+        <!--<item name="fabColorPressed">@color/accent_default_dark</item>-->
+
+        <item name="colorinProgress">@color/yellow_800</item>
+        <item name="colorFinished">@color/green_600</item>
 
         <!-- Toolbar bar -->
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.ActionBar</item>
@@ -104,9 +114,7 @@
         <item name="iconWeather">@drawable/ic_sunny_white_24dp</item>
 
         <item name="iconNew">@drawable/ic_add_box_white_24dp</item>
-        <item name="iconNewToolbar">@drawable/ic_add_box_white_24dp</item>
         <item name="iconOnOff">@drawable/ic_settings_power_white_24dp</item>
-        <item name="iconOnOffToolbar">@drawable/ic_settings_power_white_24dp</item>
         <item name="iconKeyboard">@drawable/ic_keyboard_white_24dp</item>
 
         <item name="iconSettings">@drawable/ic_settings_white_24dp</item>
@@ -143,7 +151,6 @@
         <item name="iconChevronRight">@drawable/ic_chevron_right_white_24dp</item>
 
         <item name="iconSearch">@drawable/ic_search_white_24dp</item>
-        <item name="iconSearchToolbar">@drawable/ic_search_white_24dp</item>
 
         <item name="iconOpenInNew">@drawable/ic_open_in_new_white_24dp</item>
 
@@ -161,9 +168,9 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
 
         <!-- Set AppCompat’s color theming attrs -->
-        <item name="colorPrimary">@color/deep_orange_500</item>
-        <item name="colorPrimaryDark">@color/deep_orange_700</item>
-        <item name="colorAccent">@color/light_blue_A700</item>
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryDark">@color/day_primary_dark</item>
+        <item name="colorAccent">@color/day_accent</item>
          <!--<item name="colorControlHighlight">@color/color_accent</item>-->
         <!--<item name="colorControlActivated">@color/color_accent</item>-->
 
@@ -171,13 +178,20 @@
         is set to white but can have unintended consequences. Watch it -->
         <!--<item name="colorControlNormal">@color/white</item>-->
 
+        <item name="colorToolbar">?attr/colorPrimary</item>
+        <item name="android:statusBarColor" tools:targetApi="21">?attr/colorPrimaryDark</item>
+
         <item name="appTextColorPrimary">@color/black_dim_87pct</item>
         <item name="appTextColorSecondary">@color/black_dim_54pct</item>
 
         <item name="textColorOverPrimary">@color/white</item>
+        <item name="buttonColorOverPrimary">@color/white</item>
 
-        <item name="fabColorNormal">?attr/colorPrimary</item>
-        <item name="fabColorPressed">?attr/colorPrimaryDark</item>
+        <item name="fabColorNormal">@color/accent_default</item>
+        <item name="fabColorPressed">@color/accent_default_dark</item>
+
+        <item name="colorinProgress">@color/yellow_800</item>
+        <item name="colorFinished">@color/light_green_600</item>
 
         <!-- Toolbar bar -->
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
@@ -235,49 +249,46 @@
         <item name="iconFavourites">@drawable/ic_star_white_24dp</item>
         <item name="iconWeather">@drawable/ic_sunny_white_24dp</item>
 
-        <item name="iconNew">@drawable/ic_add_box_black_24dp</item>
-        <item name="iconNewToolbar">@drawable/ic_add_box_white_24dp</item>
-        <item name="iconOnOff">@drawable/ic_settings_power_black_24dp</item>
-        <item name="iconOnOffToolbar">@drawable/ic_settings_power_white_24dp</item>
-        <item name="iconKeyboard">@drawable/ic_keyboard_black_24dp</item>
+        <item name="iconNew">@drawable/ic_add_box_white_24dp</item>
+        <item name="iconOnOff">@drawable/ic_settings_power_white_24dp</item>
+        <item name="iconKeyboard">@drawable/ic_keyboard_white_24dp</item>
 
         <item name="iconSettings">@drawable/ic_settings_white_24dp</item>
 
-        <item name="iconPlay">@drawable/ic_play_arrow_black_24dp</item>
-        <item name="iconPause">@drawable/ic_pause_black_24dp</item>
-        <item name="iconStop">@drawable/ic_stop_black_24dp</item>
-        <item name="iconFastForward">@drawable/ic_fast_forward_black_24dp</item>
-        <item name="iconRewind">@drawable/ic_fast_rewind_black_24dp</item>
-        <item name="iconNext">@drawable/ic_skip_next_black_24dp</item>
-        <item name="iconPrevious">@drawable/ic_skip_previous_black_24dp</item>
+        <item name="iconPlay">@drawable/ic_play_arrow_white_24dp</item>
+        <item name="iconPause">@drawable/ic_pause_white_24dp</item>
+        <item name="iconStop">@drawable/ic_stop_white_24dp</item>
+        <item name="iconFastForward">@drawable/ic_fast_forward_white_24dp</item>
+        <item name="iconRewind">@drawable/ic_fast_rewind_white_24dp</item>
+        <item name="iconNext">@drawable/ic_skip_next_white_24dp</item>
+        <item name="iconPrevious">@drawable/ic_skip_previous_white_24dp</item>
 
-        <item name="iconVolumeUp">@drawable/ic_volume_up_black_24dp</item>
-        <item name="iconVolumeDown">@drawable/ic_volume_down_black_24dp</item>
-        <item name="iconRepeat">@drawable/ic_repeat_black_24dp</item>
-        <item name="iconRepeatOne">@drawable/ic_repeat_one_black_24dp</item>
-        <item name="iconShuffle">@drawable/ic_shuffle_black_24dp</item>
-        <item name="iconVolumeMute">@drawable/ic_volume_off_black_24dp</item>
+        <item name="iconVolumeUp">@drawable/ic_volume_up_white_24dp</item>
+        <item name="iconVolumeDown">@drawable/ic_volume_down_white_24dp</item>
+        <item name="iconRepeat">@drawable/ic_repeat_white_24dp</item>
+        <item name="iconRepeatOne">@drawable/ic_repeat_one_white_24dp</item>
+        <item name="iconShuffle">@drawable/ic_shuffle_white_24dp</item>
+        <item name="iconVolumeMute">@drawable/ic_volume_off_white_24dp</item>
 
-        <item name="iconSubtitles">@drawable/ic_closed_caption_black_24dp</item>
+        <item name="iconSubtitles">@drawable/ic_closed_caption_white_24dp</item>
 
-        <item name="iconOverflow">@drawable/ic_more_vert_black_24dp</item>
+        <item name="iconOverflow">@drawable/ic_more_vert_white_24dp</item>
 
-        <item name="iconAddToQueue">@drawable/ic_queue_black_24dp</item>
-        <item name="iconInfoWWW">@drawable/ic_open_in_new_black_24dp</item>
-        <item name="iconSeen">@drawable/ic_done_black_24dp</item>
+        <item name="iconAddToQueue">@drawable/ic_queue_white_24dp</item>
+        <item name="iconInfoWWW">@drawable/ic_open_in_new_white_24dp</item>
+        <item name="iconSeen">@drawable/ic_done_white_24dp</item>
 
-        <item name="iconCollapse">@drawable/ic_expand_less_black_24dp</item>
-        <item name="iconExpand">@drawable/ic_expand_more_black_24dp</item>
+        <item name="iconCollapse">@drawable/ic_expand_less_white_24dp</item>
+        <item name="iconExpand">@drawable/ic_expand_more_white_24dp</item>
 
-        <item name="iconDownload">@drawable/ic_get_app_black_24dp</item>
+        <item name="iconDownload">@drawable/ic_get_app_white_24dp</item>
 
-        <item name="iconChevronLeft">@drawable/ic_chevron_left_black_24dp</item>
-        <item name="iconChevronRight">@drawable/ic_chevron_right_black_24dp</item>
+        <item name="iconChevronLeft">@drawable/ic_chevron_left_white_24dp</item>
+        <item name="iconChevronRight">@drawable/ic_chevron_right_white_24dp</item>
 
-        <item name="iconSearch">@drawable/ic_search_black_24dp</item>
-        <item name="iconSearchToolbar">@drawable/ic_search_white_24dp</item>
+        <item name="iconSearch">@drawable/ic_search_white_24dp</item>
 
-        <item name="iconOpenInNew">@drawable/ic_open_in_new_black_24dp</item>
+        <item name="iconOpenInNew">@drawable/ic_open_in_new_white_24dp</item>
 
         <item name="iconBookmark">@drawable/ic_bookmark_24dp</item>
     </style>

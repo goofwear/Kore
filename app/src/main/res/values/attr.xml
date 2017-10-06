@@ -19,6 +19,7 @@
     <attr name="appTextColorSecondary" format="reference|color" />
 
     <attr name="textColorOverPrimary" format="reference|color" />
+    <attr name="buttonColorOverPrimary" format="reference|color" />
 
     <attr name="colorAccentLight" format="reference|color" />
 
@@ -27,8 +28,13 @@
     <attr name="appSelectedCardBackgroundColor" format="reference|color" />
     <attr name="buttonBarBackgroundColor" format="reference|color" />
 
+    <attr name="colorToolbar" format="reference|color" />
+
     <attr name="fabColorNormal" format="reference|color" />
     <attr name="fabColorPressed" format="reference|color" />
+
+    <attr name="colorinProgress" format="reference|color" />
+    <attr name="colorFinished" format="reference|color" />
 
     <attr name="separatorColor" format="reference|color" />
 
@@ -56,9 +62,7 @@
     <attr name="iconSystem" format="reference" />
 
     <attr name="iconNew" format="reference" />
-    <attr name="iconNewToolbar" format="reference" />
     <attr name="iconOnOff" format="reference" />
-    <attr name="iconOnOffToolbar" format="reference" />
     <attr name="iconKeyboard" format="reference" />
 
     <attr name="iconSettings" format="reference" />
@@ -101,7 +105,6 @@
     <attr name="iconExpand" format="reference" />
 
     <attr name="iconSearch" format="reference" />
-    <attr name="iconSearchToolbar" format="reference" />
 
     <attr name="iconDownload" format="reference" />
 

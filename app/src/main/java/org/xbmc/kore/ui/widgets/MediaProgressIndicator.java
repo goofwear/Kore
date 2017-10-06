@@ -18,8 +18,11 @@ package org.xbmc.kore.ui.widgets;
 
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -27,11 +30,15 @@ import android.widget.TextView;
 import org.xbmc.kore.R;
 import org.xbmc.kore.utils.UIUtils;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class MediaProgressIndicator extends LinearLayout {
 
-    private SeekBar seekBar;
-    private TextView durationTextView;
-    private TextView progressTextView;
+    @InjectView(R.id.mpi_seek_bar) SeekBar seekBar;
+    @InjectView(R.id.mpi_duration) TextView durationTextView;
+    @InjectView(R.id.mpi_progress) TextView progressTextView;
+
     private int speed = 0;
     private int maxProgress;
     private int progress;
@@ -54,18 +61,15 @@ public class MediaProgressIndicator extends LinearLayout {
         initializeView(context);
     }
 
-    private void initializeView(Context context) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.media_progress_indicator, this);
+    public MediaProgressIndicator(Context context, AttributeSet attributeSet, int defStyle) {
+        super(context, attributeSet, defStyle);
+        initializeView(context);
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        seekBar = (SeekBar) findViewById(R.id.mpi_seek_bar);
-        progressTextView = (TextView) findViewById(R.id.mpi_progress);
-        durationTextView = (TextView) findViewById(R.id.mpi_duration);
+    private void initializeView(Context context) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.media_progress_indicator, this);
+        ButterKnife.inject(view);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -94,6 +98,24 @@ public class MediaProgressIndicator extends LinearLayout {
         });
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        SavedState savedState = new SavedState(super.onSaveInstanceState());
+        savedState.progress = progress;
+        savedState.maxProgress = maxProgress;
+        return savedState;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        progress = savedState.progress;
+        maxProgress = savedState.maxProgress;
+        setProgress(progress);
+        setMaxProgress(maxProgress);
+    }
+
     private Runnable seekBarUpdater = new Runnable() {
         @Override
         public void run() {
@@ -119,6 +141,10 @@ public class MediaProgressIndicator extends LinearLayout {
         progressTextView.setText(UIUtils.formatTime(progress));
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
     public void setMaxProgress(int max) {
         maxProgress = max;
         seekBar.setMax(max);
@@ -139,5 +165,38 @@ public class MediaProgressIndicator extends LinearLayout {
         seekBar.removeCallbacks(seekBarUpdater);
         if (speed > 0)
             seekBar.postDelayed(seekBarUpdater, SEEK_BAR_UPDATE_INTERVAL);
+    }
+
+    private static class SavedState extends BaseSavedState {
+        int progress;
+        int maxProgress;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            progress = in.readInt();
+            maxProgress = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(progress);
+            out.writeInt(maxProgress);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }
